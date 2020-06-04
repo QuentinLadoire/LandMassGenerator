@@ -2,38 +2,26 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MeshMap
+public class MeshData
 {
-	Mesh m_mesh = null;
-	public Mesh mesh { get => m_mesh; }
+	public Mesh mesh = null;
 
-	Vector3[] m_vertices = null;
-	int[] m_triangles = null;
-	Vector2[] m_uvs = null;
+	public Vector3[] vertices = null;
+	public int[] triangles = null;
+	public Vector2[] uvs = null;
 
 	int m_triangleIndex = 0;
 
-	MeshMap(int width, int height)
+	void AddTriangles(int a, int b, int c)
 	{
-		m_mesh = null;
-
-		m_vertices = new Vector3[width * height];
-		m_triangles = new int[(width - 1) * (height - 1) * 6];
-		m_uvs = new Vector2[width * height];
-
-		m_triangleIndex = 0;
-	}
-
-	void AddTriangle(int a, int b, int c)
-	{
-		m_triangles[m_triangleIndex] = a;
-		m_triangles[m_triangleIndex + 1] = b;
-		m_triangles[m_triangleIndex + 2] = c;
+		triangles[m_triangleIndex] = a;
+		triangles[m_triangleIndex + 1] = b;
+		triangles[m_triangleIndex + 2] = c;
 
 		m_triangleIndex += 3;
 	}
 
-	void CreateMesh(float[,] noiseMap, float heightMultiplier, AnimationCurve heightCurve)
+	public void GenerateMesh(float[,] noiseMap, float heightMultiplier, AnimationCurve heightCurve, int lod)
 	{
 		if (noiseMap != null)
 		{
@@ -43,37 +31,65 @@ public class MeshMap
 			float topLeftX = -((width - 1) / 2.0f);
 			float topLeftZ = (height - 1) / 2.0f;
 
-			for (int i = 0; i < width; i++)
+			int lodIncrement = (lod == 0) ? 1 : (lod * 2);
+			int size = ((width - 1) / lodIncrement) + 1;
+
+			vertices = new Vector3[size * size];
+			triangles = new int[(size - 1) * (size - 1) * 6];
+			uvs = new Vector2[size * size];
+
+			int vertexIndex = 0;
+			for (int j = 0; j < height; j += lodIncrement)
 			{
-				for (int j = 0; j < height; j++)
+				for (int i = 0; i < width; i += lodIncrement)
 				{
-					int index = width * j + i;
+					vertices[vertexIndex] = new Vector3(topLeftX + i, heightCurve.Evaluate(noiseMap[i, j]) * heightMultiplier, topLeftZ - j);
+					uvs[vertexIndex] = new Vector2(i / (float)width, j / (float)height);
 
-					m_vertices[index] = new Vector3(topLeftX + i, heightCurve.Evaluate(noiseMap[i, j]) * heightMultiplier, topLeftZ - j);
-					m_uvs[index] = new Vector2(i / (float)width, j / (float)height);
-
-					if (i < width - 1 && j < height - 1)
+					if (i < (width - 1) && j < (height - 1))
 					{
-						AddTriangle(index, index + width + 1, index + width);
-						AddTriangle(index + width + 1, index, index + 1);
+						AddTriangles(vertexIndex, vertexIndex + size + 1, vertexIndex + size);
+						AddTriangles(vertexIndex + size + 1, vertexIndex, vertexIndex + 1);
 					}
+
+					vertexIndex++;
 				}
 			}
-		}
 
-		m_mesh = new Mesh();
-		m_mesh.vertices = m_vertices;
-		m_mesh.triangles = m_triangles;
-		m_mesh.uv = m_uvs;
-		m_mesh.RecalculateNormals();
+			mesh = new Mesh();
+			mesh.vertices = vertices;
+			mesh.triangles = triangles;
+			mesh.uv = uvs;
+			mesh.RecalculateNormals();
+		}
+	}
+}
+
+public class MeshMap
+{
+	List<MeshData> m_meshDatas = new List<MeshData>();
+
+	public Mesh GetMesh(int lod)
+	{
+		if (lod < m_meshDatas.Count && lod >= 0)
+			return m_meshDatas[lod].mesh;
+
+		return null;
 	}
 
-	public static MeshMap GenerateMap(NoiseMap noiseMap, float heightMultiplier, AnimationCurve heightCurve, Vector2 position)
+	public static MeshMap GenerateMap(NoiseMap noiseMap, float heightMultiplier, AnimationCurve heightCurve, int lodMax, Vector2 position)
 	{
 		if (noiseMap != null)
 		{
-			var meshMap = new MeshMap(noiseMap.width, noiseMap.height);
-			meshMap.CreateMesh(noiseMap.GetMap(position), heightMultiplier, heightCurve);
+			var meshMap = new MeshMap();
+
+			for (int i = 0; i < lodMax; i++)
+			{
+				var meshData = new MeshData();
+				meshData.GenerateMesh(noiseMap.GetMap(position), heightMultiplier, heightCurve, i);
+
+				meshMap.m_meshDatas.Add(meshData);
+			}
 
 			return meshMap;
 		}

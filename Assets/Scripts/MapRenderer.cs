@@ -7,9 +7,7 @@ using MapInfo = System.Collections.Generic.List<TerrainInfo>;
 
 public class MapRenderer : MonoBehaviour
 {
-	[Header("Intern reference")]
-	[SerializeField] GameObject m_plane = null;
-	Renderer m_planeRenderer = null;
+	[SerializeField] MapGenerator m_mapGenerator = null;
 
 	[SerializeField] GameObject m_mesh = null;
 	Renderer m_meshRenderer = null;
@@ -70,47 +68,42 @@ public class MapRenderer : MonoBehaviour
 		return texture;
 	}
 
-	Texture2D GenerateMapTexture(MapGenerator mapGenerator)
+	Texture2D GenerateMapTexture()
 	{
 		Texture2D texture = null;
 
-		if (mapGenerator.drawMode == DrawMode.HeighMap) texture = GenerateHeightMap(mapGenerator.GetMap());
-		else if (mapGenerator.drawMode == DrawMode.ColorMap) texture = GenerateColorMap(mapGenerator.GetMap(), mapGenerator.GetMapInfo());
+		if (m_mapGenerator != null)
+		{
+			if (m_mapGenerator.drawMode == DrawMode.HeighMap) texture = GenerateHeightMap(m_mapGenerator.GetMap());
+			else if (m_mapGenerator.drawMode == DrawMode.ColorMap) texture = GenerateColorMap(m_mapGenerator.GetMap(), m_mapGenerator.GetMapInfo());
+		}
 
 		return texture;
 	}
-	Mesh GenerateMapMesh(MapGenerator mapGenerator)
+	Mesh GenerateMapMesh()
 	{
 		Mesh mesh = null;
 
-		if (mapGenerator != null)
+		if (m_mapGenerator != null)
 		{
-			var meshMap = MeshMap.GenerateMap(mapGenerator.noiseMap, mapGenerator.heightMultiplier, mapGenerator.heightCurve, mapGenerator.position);
-			if (meshMap != null) mesh = meshMap.mesh;
+			var meshMap = MeshMap.GenerateMap(m_mapGenerator.noiseMap, m_mapGenerator.heightMultiplier, m_mapGenerator.heightCurve, m_mapGenerator.lodMax, m_mapGenerator.position);
+			if (meshMap != null) mesh = meshMap.GetMesh(m_mapGenerator.lod);
 		}
 
 		return mesh;
 	}
 
-	public void DrawMap(MapGenerator mapGenerator)
+	public void DrawMap()
 	{
-		if (m_plane != null)
-		{
-			m_planeRenderer.sharedMaterial.mainTexture = GenerateMapTexture(mapGenerator);
-		}
 		if (m_mesh != null)
 		{
-			m_meshFilter.sharedMesh = GenerateMapMesh(mapGenerator);
-			m_meshRenderer.sharedMaterial.mainTexture = GenerateMapTexture(mapGenerator);
+			m_meshFilter.sharedMesh = GenerateMapMesh();
+			m_meshRenderer.sharedMaterial.mainTexture = GenerateMapTexture();
 		}
 	}
 
 	private void OnValidate()
 	{
-		if (m_plane != null)
-		{
-			m_planeRenderer = m_plane.GetComponent<MeshRenderer>();
-		}
 		if (m_mesh != null)
 		{
 			m_meshFilter = m_mesh.GetComponent<MeshFilter>();

@@ -26,9 +26,15 @@ public class MapGenerator : MonoBehaviour
 	public DrawMode drawMode { get => m_drawMode; }
 
 	[Header("Parameters")]
-	[SerializeField] int m_width = 256;
-	[SerializeField] int m_height = 256;
+	const int m_chunkSize = 241;
+
 	[SerializeField] float m_scale = 20.0f;
+
+	[SerializeField] int m_lodMax = 1;
+	public int lodMax { get => m_lodMax; }
+
+	[SerializeField] [Range(0.0f, 1.0f)] float m_lodPercent = 0;
+	public int lod { get => (int)((m_lodMax - 1) * m_lodPercent); }
 
 	[SerializeField] float m_heightMultiplier = 1.0f;
 	public float heightMultiplier { get => m_heightMultiplier; }
@@ -53,9 +59,9 @@ public class MapGenerator : MonoBehaviour
 
 	public void GenerateMap()
 	{
-		m_noiseMap = NoiseMap.GenerateMap(m_width, m_height, m_seed, m_scale, m_octaves, m_lacunarity, m_persistance, m_offset);
+		m_noiseMap = NoiseMap.GenerateMap(m_chunkSize, m_chunkSize, m_seed, m_scale, m_octaves, m_lacunarity, m_persistance, m_offset);
 
-		if (m_mapRenderer != null) m_mapRenderer.DrawMap(this);
+		if (m_mapRenderer != null) m_mapRenderer.DrawMap();
 	}
 	public float[,] GetMap()
 	{
@@ -70,21 +76,18 @@ public class MapGenerator : MonoBehaviour
 
 	private void OnValidate()
 	{
-		if (m_width <= 0) m_width = 1;
-		if (m_height <= 0) m_width = 1;
 		if (m_octaves <= 0) m_octaves = 1;
 		if (m_lacunarity < 1) m_lacunarity = 1;
+		if (m_lodMax <= 0) m_lodMax = 1;
 
 		if (m_noiseMap != null)
 		{
-			m_noiseMap.width = m_width;
-			m_noiseMap.height = m_height;
 			m_noiseMap.scale = m_scale;
 			m_noiseMap.lacunarity = m_lacunarity;
 			m_noiseMap.persistance = m_persistance;
 			m_noiseMap.offset = m_offset;
 		}
 
-		if (m_mapRenderer != null) m_mapRenderer.DrawMap(this);
+		if (m_mapRenderer != null) m_mapRenderer.DrawMap();
 	}
 }

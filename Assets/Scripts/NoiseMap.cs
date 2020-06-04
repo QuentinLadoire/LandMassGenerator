@@ -9,7 +9,6 @@ public class NoiseMap
 	public int width = 0;
 	public int height = 0;
 	public float scale = 0.0f;
-	public float heightMultiplier = 1.0f;
 
 	public int octaves = 1;
 	public float lacunarity = 2.0f;
