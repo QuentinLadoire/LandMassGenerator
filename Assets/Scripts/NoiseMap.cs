@@ -4,35 +4,19 @@ using UnityEngine;
 
 public class NoiseMap
 {
-	public int seed = 0;
+	public int seed { get; set; }
 
-	public int width = 0;
-	public int height = 0;
-	public float scale = 0.0f;
+	public int width { get; set; }
+	public int height { get; set; }
+	public float scale { get; set; }
 
-	public int octaves = 1;
-	public float lacunarity = 2.0f;
-	public float persistance = 0.5f;
+	public int octaves { get; set; }
+	public float lacunarity { get; set; }
+	public float persistance { get; set; }
 
-	public Vector2 offset = Vector2.zero;
+	public Vector2 offset { get; set; }
 
 	Vector2[] octavesRandomOffset = null;
-
-	NoiseMap(int seed, int width, int height, float scale, int octaves, float lacunarity, float persistance, Vector2 offset, Vector2[] octavesRandomOffset)
-	{
-		this.seed = seed;
-
-		this.width = width;
-		this.height = height;
-		this.scale = scale;
-
-		this.octaves = octaves;
-		this.lacunarity = lacunarity;
-		this.persistance = persistance;
-
-		this.offset = offset;
-		this.octavesRandomOffset = octavesRandomOffset;
-	}
 
 	public float[,] GetMap(Vector2 position)
 	{
@@ -84,7 +68,7 @@ public class NoiseMap
 		return noiseMap;
 	}
 
-	public static NoiseMap GenerateMap(int width, int height, int seed, float scale, int octaves, float lacunarity, float persistance, Vector2 offset)
+	public NoiseMap(int width, int height, int seed, float scale, int octaves, float lacunarity, float persistance, Vector2 offset)
 	{
 		Random.InitState(seed);
 
@@ -98,6 +82,17 @@ public class NoiseMap
 			octavesRandomOffset[i] = new Vector2(offsetX, offsetY);
 		}
 
-		return new NoiseMap(seed, width, height, scale, octaves, lacunarity, persistance, offset, octavesRandomOffset);
+		this.seed = seed;
+
+		this.width = width;
+		this.height = height;
+		this.scale = scale;
+
+		this.octaves = octaves;
+		this.lacunarity = lacunarity;
+		this.persistance = persistance;
+
+		this.offset = offset;
+		this.octavesRandomOffset = octavesRandomOffset;
 	}
 }

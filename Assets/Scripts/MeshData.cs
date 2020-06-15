@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class MeshData
 {
-	public Mesh mesh = null;
-
 	public Vector3[] vertices = null;
 	public int[] triangles = null;
 	public Vector2[] uvs = null;
@@ -21,7 +19,7 @@ public class MeshData
 		m_triangleIndex += 3;
 	}
 
-	public void GenerateMesh(float[,] noiseMap, float heightMultiplier, AnimationCurve heightCurve, int lod)
+	public MeshData(float[,] noiseMap, float heightMultiplier, AnimationCurve heightCurve, int lod)
 	{
 		if (noiseMap != null)
 		{
@@ -55,45 +53,17 @@ public class MeshData
 					vertexIndex++;
 				}
 			}
-
-			mesh = new Mesh();
-			mesh.vertices = vertices;
-			mesh.triangles = triangles;
-			mesh.uv = uvs;
-			mesh.RecalculateNormals();
 		}
 	}
-}
 
-public class MeshMap
-{
-	List<MeshData> m_meshDatas = new List<MeshData>();
-
-	public Mesh GetMesh(int lod)
+	public Mesh CreateMesh()
 	{
-		if (lod < m_meshDatas.Count && lod >= 0)
-			return m_meshDatas[lod].mesh;
+		var mesh = new Mesh();
+		mesh.vertices = vertices;
+		mesh.triangles = triangles;
+		mesh.uv = uvs;
+		mesh.RecalculateNormals();
 
-		return null;
-	}
-
-	public static MeshMap GenerateMap(NoiseMap noiseMap, float heightMultiplier, AnimationCurve heightCurve, int lodMax, Vector2 position)
-	{
-		if (noiseMap != null)
-		{
-			var meshMap = new MeshMap();
-
-			for (int i = 0; i < lodMax; i++)
-			{
-				var meshData = new MeshData();
-				meshData.GenerateMesh(noiseMap.GetMap(position), heightMultiplier, heightCurve, i);
-
-				meshMap.m_meshDatas.Add(meshData);
-			}
-
-			return meshMap;
-		}
-
-		return null;
+		return mesh;
 	}
 }

@@ -20,13 +20,8 @@ public class TerrainInfo
 
 public class MapGenerator : MonoBehaviour
 {
-	[Header("Renderer")]
-	[SerializeField] MapRenderer m_mapRenderer = null;
-	[SerializeField] DrawMode m_drawMode = DrawMode.HeighMap;
-	public DrawMode drawMode { get => m_drawMode; }
-
 	[Header("Parameters")]
-	const int m_chunkSize = 241;
+	public const int chunkSize = 241;
 
 	[SerializeField] float m_scale = 20.0f;
 
@@ -49,45 +44,14 @@ public class MapGenerator : MonoBehaviour
 	[SerializeField] int m_seed = 0;
 	[SerializeField] Vector2 m_offset = Vector2.zero;
 
-	[SerializeField] Vector2 m_position = Vector2.zero;
-	public Vector2 position { get => m_position; }
-
 	[SerializeField] MapInfo m_mapInfo = new MapInfo();
+	public MapInfo mapInfo { get => m_mapInfo; }
 
 	NoiseMap m_noiseMap = null;
 	public NoiseMap noiseMap { get => m_noiseMap; }
 
-	public void GenerateMap()
+	private void Start()
 	{
-		m_noiseMap = NoiseMap.GenerateMap(m_chunkSize, m_chunkSize, m_seed, m_scale, m_octaves, m_lacunarity, m_persistance, m_offset);
-
-		if (m_mapRenderer != null) m_mapRenderer.DrawMap();
-	}
-	public float[,] GetMap()
-	{
-		if (m_noiseMap == null) return null;
-
-		return m_noiseMap.GetMap(m_position);
-	}
-	public MapInfo GetMapInfo()
-	{
-		return m_mapInfo;
-	}
-
-	private void OnValidate()
-	{
-		if (m_octaves <= 0) m_octaves = 1;
-		if (m_lacunarity < 1) m_lacunarity = 1;
-		if (m_lodMax <= 0) m_lodMax = 1;
-
-		if (m_noiseMap != null)
-		{
-			m_noiseMap.scale = m_scale;
-			m_noiseMap.lacunarity = m_lacunarity;
-			m_noiseMap.persistance = m_persistance;
-			m_noiseMap.offset = m_offset;
-		}
-
-		if (m_mapRenderer != null) m_mapRenderer.DrawMap();
+		m_noiseMap = new NoiseMap(chunkSize, chunkSize, m_seed, m_scale, m_octaves, m_lacunarity, m_persistance, m_offset);
 	}
 }
