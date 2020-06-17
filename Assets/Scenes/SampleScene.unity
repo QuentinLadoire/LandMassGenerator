@@ -484,31 +484,19 @@ MonoBehaviour:
   m_persistance: 0.5
   m_seed: 0
   m_offset: {x: 0, y: 0}
-  m_mapInfo:
-  - name: DeepWater
-    height: 0.3
-    color: {r: 0.1804913, g: 0.4795813, b: 0.9811321, a: 1}
+  m_biomeInfo:
   - name: Water
-    height: 0.5
-    color: {r: 0.28502133, g: 0.54787135, b: 0.990566, a: 1}
+    height: 0.4
+    color: {r: 0.15566039, g: 0.62803394, b: 1, a: 1}
   - name: Sand
+    height: 0.45
+    color: {r: 0.9245283, g: 0.7415811, b: 0.30962977, a: 1}
+  - name: Grass
     height: 0.6
-    color: {r: 0.9811321, g: 0.9306671, b: 0.51370597, a: 1}
-  - name: Grass01
-    height: 0.65
-    color: {r: 0.099857606, g: 0.6415094, b: 0.12715557, a: 1}
-  - name: Grass02
-    height: 0.7
-    color: {r: 0.09878961, g: 0.5660378, b: 0.1223201, a: 1}
-  - name: Rock01
-    height: 0.75
-    color: {r: 0.6603774, g: 0.37285596, b: 0.14640442, a: 1}
-  - name: Rock02
+    color: {r: 0.22486618, g: 0.745283, b: 0.10898005, a: 1}
+  - name: Rock
     height: 0.8
-    color: {r: 0.5754717, g: 0.28958005, b: 0.06243326, a: 1}
-  - name: Rock03
-    height: 0.9
-    color: {r: 0.4339623, g: 0.25031117, b: 0.104396574, a: 1}
+    color: {r: 0.5, g: 0.47325915, b: 0.45990565, a: 1}
   - name: Snow
     height: 1
     color: {r: 1, g: 1, b: 1, a: 1}

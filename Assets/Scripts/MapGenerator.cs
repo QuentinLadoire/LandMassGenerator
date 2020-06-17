@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-using MapInfo = System.Collections.Generic.List<TerrainInfo>;
+using BiomeInfo = System.Collections.Generic.List<TerrainInfo>;
 
 public enum DrawMode
 {
@@ -16,6 +16,24 @@ public class TerrainInfo
 	public string name = "NoName";
 	public float height = 0.0f;
 	public Color color = Color.white;
+}
+
+public struct MapInfo
+{
+	public NoiseMap noiseMap;
+	public float heightMultiplier;
+	public AnimationCurve heightCurve;
+	public int lodMax;
+	public BiomeInfo biomeInfo;
+
+	public MapInfo(NoiseMap noiseMap, float heightMultiplier, AnimationCurve heightCurve, int lodMax, BiomeInfo biomeInfo)
+	{
+		this.noiseMap = noiseMap;
+		this.heightMultiplier = heightMultiplier;
+		this.heightCurve = heightCurve;
+		this.lodMax = lodMax;
+		this.biomeInfo = biomeInfo;
+	}
 }
 
 public class MapGenerator : MonoBehaviour
@@ -44,11 +62,13 @@ public class MapGenerator : MonoBehaviour
 	[SerializeField] int m_seed = 0;
 	[SerializeField] Vector2 m_offset = Vector2.zero;
 
-	[SerializeField] MapInfo m_mapInfo = new MapInfo();
-	public MapInfo mapInfo { get => m_mapInfo; }
+	[SerializeField] BiomeInfo m_biomeInfo = new BiomeInfo();
+	public BiomeInfo biomeInfo { get => m_biomeInfo; }
 
 	NoiseMap m_noiseMap = null;
 	public NoiseMap noiseMap { get => m_noiseMap; }
+
+	public MapInfo mapInfo { get => new MapInfo(noiseMap, heightMultiplier, heightCurve, lodMax, biomeInfo); }
 
 	private void Start()
 	{

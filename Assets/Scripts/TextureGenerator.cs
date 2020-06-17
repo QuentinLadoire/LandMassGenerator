@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-using MapInfo = System.Collections.Generic.List<TerrainInfo>;
+using BiomeInfo = System.Collections.Generic.List<TerrainInfo>;
 
 public class TextureGenerator
 {
-	public static Texture2D GenerateHeightMap(float[,] noiseMap)
+	public static Color[] GenerateHeightMap(float[,] noiseMap)
 	{
 		if (noiseMap == null) return null;
 
@@ -22,14 +22,9 @@ public class TextureGenerator
 			}
 		}
 
-		var texture = new Texture2D(width, height);
-		texture.filterMode = FilterMode.Point;
-		texture.SetPixels(heightMap);
-		texture.Apply();
-
-		return texture;
+		return heightMap;
 	}
-	public static Texture2D GenerateColorMap(float[,] noiseMap, MapInfo mapInfo)
+	public static Color[] GenerateColorMap(float[,] noiseMap, BiomeInfo biomeInfo)
 	{
 		if (noiseMap == null) return null;
 
@@ -41,17 +36,22 @@ public class TextureGenerator
 		{
 			for (int j = 0; j < height; j++)
 			{
-				for (int k = 0; k < mapInfo.Count; k++)
+				for (int k = 0; k < biomeInfo.Count; k++)
 				{
-					if (noiseMap[i, j] <= mapInfo[k].height)
+					if (noiseMap[i, j] <= biomeInfo[k].height)
 					{
-						colorMap[width * j + i] = mapInfo[k].color;
+						colorMap[width * j + i] = biomeInfo[k].color;
 						break;
 					}
 				}
 			}
 		}
 
+		return colorMap;
+	}
+
+	public static Texture2D GenerateTexture(Color[] colorMap, int width, int height)
+	{
 		Texture2D texture = new Texture2D(width, height);
 		texture.filterMode = FilterMode.Point;
 		texture.wrapMode = TextureWrapMode.Clamp;

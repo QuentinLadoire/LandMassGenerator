@@ -2,32 +2,21 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-using MapInfo = System.Collections.Generic.List<TerrainInfo>;
-
 public class Chunk : MonoBehaviour
 {
 	MeshFilter m_meshFilter = null;
 	MeshRenderer m_meshRenderer = null;
 
-	List<MeshData> m_meshDatas = new List<MeshData>();
-	Texture m_texture = null;
-
 	bool m_update = false;
 
-	public void Init(NoiseMap noiseMap, float heightMultiplier, AnimationCurve heightCurve, int lodMax, MapInfo mapInfo)
+	ChunkData m_chunkData = null;
+	public ChunkData chunkData
 	{
-		if (noiseMap != null)
+		get => m_chunkData;
+		set
 		{
-			var map = noiseMap.GetMap(new Vector2(transform.position.x, -transform.position.z));
-
-			for (int i = 0; i < lodMax; i++)
-			{
-				m_meshDatas.Add(new MeshData(map, heightMultiplier, heightCurve, i));
-			}
-
-			m_texture = TextureGenerator.GenerateColorMap(map, mapInfo);
-
 			m_update = true;
+			m_chunkData = value;
 		}
 	}
 
@@ -40,8 +29,8 @@ public class Chunk : MonoBehaviour
 	{
 		if (m_update)
 		{
-			m_meshFilter.sharedMesh = m_meshDatas[0].CreateMesh();
-			m_meshRenderer.material.mainTexture = m_texture;
+			m_meshFilter.sharedMesh = m_chunkData.meshDatas[0].CreateMesh();
+			m_meshRenderer.sharedMaterial.mainTexture = TextureGenerator.GenerateTexture(m_chunkData.colorMap, m_chunkData.size.x, m_chunkData.size.y);
 
 			m_update = false;
 		}

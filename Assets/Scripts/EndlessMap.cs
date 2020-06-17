@@ -1,7 +1,20 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
+
+public struct ChunkDataKeyInfo
+{
+    public ChunkData chunkData;
+    public Vector2Int key;
+
+    public ChunkDataKeyInfo(ChunkData chunkData, Vector2Int key)
+    {
+        this.chunkData = chunkData;
+        this.key = key;
+    }
+}
 
 public class EndlessMap : MonoBehaviour
 {
@@ -14,8 +27,10 @@ public class EndlessMap : MonoBehaviour
 
     MapGenerator m_mapGenerator = null;
     Dictionary<Vector2Int, Chunk> m_chunkDictionary = new Dictionary<Vector2Int, Chunk>();
+    Queue<ChunkDataKeyInfo> m_chunkDataInfoQueue = new Queue<ChunkDataKeyInfo>();
+    Vector2Int m_currentKey = new Vector2Int(int.MinValue, int.MinValue);
 
-    Vector2Int m_currentKey = Vector2Int.zero;
+    readonly object m_chunkDataInfoQueueLock = new object();
 
     Vector2Int GetChunkKey(Vector2 position)
     {
@@ -25,14 +40,6 @@ public class EndlessMap : MonoBehaviour
         return new Vector2Int(x, y);
     }
 
-    Chunk CreateChunk(Vector2Int key)
-    {
-        var chunk = Instantiate(m_chunkPrefab).GetComponent<Chunk>();
-        chunk.transform.position = new Vector3(key.x * (MapGenerator.chunkSize - 1), 0.0f, key.y * (MapGenerator.chunkSize - 1));
-        chunk.Init(m_mapGenerator.noiseMap, m_mapGenerator.heightMultiplier, m_mapGenerator.heightCurve, m_mapGenerator.lodMax, m_mapGenerator.mapInfo);
-
-        return chunk;
-    }
     void RemoveChunk(Vector2Int key)
     {
         var chunk = m_chunkDictionary[key];
@@ -40,21 +47,19 @@ public class EndlessMap : MonoBehaviour
 
         Destroy(chunk.gameObject);
     }
-    void LoadChunks(Vector2Int key)
+    Chunk CreateChunk(Vector2Int key, ChunkData chunkData)
     {
-        for (int i = -m_radius; i < m_radius + 1; i++)
-        {
-            for (int j = -m_radius; j < m_radius + 1; j++)
-            {
-                var tmp = key + new Vector2Int(i, j);
-                if (!m_chunkDictionary.ContainsKey(tmp))
-                {
-                    var chunk = CreateChunk(tmp);
-                    m_chunkDictionary.Add(tmp, chunk);
-                }
-            }
-        }
+        var chunk = Instantiate(m_chunkPrefab).GetComponent<Chunk>();
+        chunk.transform.position = new Vector3(key.x * (MapGenerator.chunkSize - 1), 0.0f, key.y * (MapGenerator.chunkSize - 1));
+        chunk.chunkData = new ChunkData(chunkData);
+        
+        return chunk;
     }
+    ChunkData CreateChunkData(Vector2Int key)
+    {
+        return new ChunkData(m_mapGenerator.mapInfo, new Vector2(key.x * (MapGenerator.chunkSize - 1), key.y * (MapGenerator.chunkSize - 1)));
+    }
+
     void UnloadChunks(Vector2Int key)
     {
         List<Vector2Int> keysToRemove = new List<Vector2Int>();
@@ -69,23 +74,39 @@ public class EndlessMap : MonoBehaviour
         }
 
         foreach (var keyToRemove in keysToRemove)
+        {
             RemoveChunk(keyToRemove);
+        }
+    }
+    void LoadChunkDatas(Vector2Int key)
+    {
+        lock (m_chunkDataInfoQueueLock)
+        {
+            for (int i = -m_radius; i < m_radius + 1; i++)
+            {
+                for (int j = -m_radius; j < m_radius + 1; j++)
+                {
+                    var tmp = key + new Vector2Int(i, j);
+                    if (!m_chunkDictionary.ContainsKey(tmp))
+                    {
+                        var chunkData = CreateChunkData(tmp);
+                        m_chunkDataInfoQueue.Enqueue(new ChunkDataKeyInfo(chunkData, tmp));
+                    }
+                }
+            }
+        }
     }
 
     void OnChunkEnter(Vector2Int key)
     {
-        UnloadChunks(key);
-        LoadChunks(key);
+        //UnloadChunks(key);
+
+        new Thread(new ThreadStart(delegate { LoadChunkDatas(key); })).Start();
     }
 
     private void Awake()
     {
         m_mapGenerator = GetComponent<MapGenerator>();
-    }
-    private void Start()
-    {
-        m_currentKey = GetChunkKey(m_player.position);
-        OnChunkEnter(m_currentKey);
     }
     private void Update()
     {
@@ -95,6 +116,18 @@ public class EndlessMap : MonoBehaviour
             OnChunkEnter(key);
 
             m_currentKey = key;
+        }
+
+        if (Monitor.TryEnter(m_chunkDataInfoQueueLock))
+        {
+            if (m_chunkDataInfoQueue.Count > 0)
+            {
+                var chunkDataInfo = m_chunkDataInfoQueue.Dequeue();
+                var chunk = CreateChunk(chunkDataInfo.key, chunkDataInfo.chunkData);
+                m_chunkDictionary.Add(chunkDataInfo.key, chunk);
+            }
+
+            Monitor.Exit(m_chunkDataInfoQueueLock);
         }
     }
 }
