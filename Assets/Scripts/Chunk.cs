@@ -24,6 +24,8 @@ public class Chunk : MonoBehaviour
 	{
 		m_meshFilter = GetComponent<MeshFilter>();
 		m_meshRenderer = GetComponent<MeshRenderer>();
+
+		Debug.Log("i'm not a spy");
 	}
 	private void Update()
 	{
