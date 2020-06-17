@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -28,6 +28,7 @@ public class Chunk : MonoBehaviour
 		Debug.Log("i'm not a spy");
 		Debug.Log("quentin is a spy");
 		Debug.Log("this is stackoverflow code");
+		Debug.Log("C'est a mon tour de faire le Spy");
 	}
 	private void Update()
 	{
