@@ -26,6 +26,7 @@ public class Chunk : MonoBehaviour
 		m_meshRenderer = GetComponent<MeshRenderer>();
 
 		Debug.Log("i'm not a spy");
+		Debug.Log("quentin is a spy")
 	}
 	private void Update()
 	{
