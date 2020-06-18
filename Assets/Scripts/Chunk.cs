@@ -29,8 +29,8 @@ public class Chunk : MonoBehaviour
 	{
 		if (m_update)
 		{
-			m_meshFilter.sharedMesh = m_chunkData.meshDatas[0].CreateMesh();
-			m_meshRenderer.sharedMaterial.mainTexture = TextureGenerator.GenerateTexture(m_chunkData.colorMap, m_chunkData.size.x, m_chunkData.size.y);
+			m_meshFilter.mesh = m_chunkData.meshDatas[0].CreateMesh();
+			m_meshRenderer.material.mainTexture = TextureGenerator.GenerateTexture(m_chunkData.colorMap, m_chunkData.size.x, m_chunkData.size.y);
 
 			m_update = false;
 		}

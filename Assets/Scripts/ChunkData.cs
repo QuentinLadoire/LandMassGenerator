@@ -19,14 +19,14 @@ public class ChunkData
 		if (mapInfo.noiseMap != null)
 		{
 			var map = mapInfo.noiseMap.GetMap(new Vector2(position.x, -position.y));
-
+			
 			meshDatas = new MeshData[mapInfo.lodMax];
 			for (int i = 0; i < mapInfo.lodMax; i++)
 			{
 				meshDatas[i] = new MeshData(map, mapInfo.heightMultiplier, mapInfo.heightCurve, i);
 			}
 
-			size = new Vector2Int(map.GetLength(0), map.GetLength(1));
+			size = new Vector2Int(mapInfo.noiseMap.width, mapInfo.noiseMap.height);
 			colorMap = TextureGenerator.GenerateColorMap(map, mapInfo.biomeInfo);
 		}
 	}
