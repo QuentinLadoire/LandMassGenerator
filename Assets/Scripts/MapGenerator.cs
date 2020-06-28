@@ -68,10 +68,11 @@ public class MapGenerator : MonoBehaviour
 	NoiseMap m_noiseMap = null;
 	public NoiseMap noiseMap { get => m_noiseMap; }
 
-	public MapInfo mapInfo { get => new MapInfo(noiseMap, heightMultiplier, heightCurve, lodMax, biomeInfo); }
+	public MapInfo mapInfo { get; private set; }
 
 	private void Start()
 	{
-		m_noiseMap = new NoiseMap(chunkSize, chunkSize, m_seed, m_scale, m_octaves, m_lacunarity, m_persistance, m_offset);
+		m_noiseMap = new NoiseMap(m_seed, m_scale, m_octaves, m_lacunarity, m_persistance, m_offset);
+		mapInfo = new MapInfo(noiseMap, heightMultiplier, heightCurve, lodMax, biomeInfo);
 	}
 }

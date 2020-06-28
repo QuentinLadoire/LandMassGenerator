@@ -67,7 +67,7 @@ public class EndlessMap : MonoBehaviour
     }
     ChunkData CreateChunkData(Vector2Int key)
     {
-        return new ChunkData(m_mapGenerator.mapInfo, new Vector2(key.x * (MapGenerator.chunkSize - 1), key.y * (MapGenerator.chunkSize - 1)));
+        return new ChunkData(m_mapGenerator.mapInfo, new Vector2(key.x * (MapGenerator.chunkSize - 1), key.y * (MapGenerator.chunkSize - 1)), new Vector2Int(MapGenerator.chunkSize, MapGenerator.chunkSize));
     }
 
     //ChunkLoader Thread Function

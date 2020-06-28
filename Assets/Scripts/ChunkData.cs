@@ -14,11 +14,11 @@ public class ChunkData
 		colorMap = copy.colorMap.Clone() as Color[];
 		size = copy.size;
 	}
-	public ChunkData(MapInfo mapInfo, Vector2 position)
+	public ChunkData(MapInfo mapInfo, Vector2 position, Vector2Int size)
 	{
 		if (mapInfo.noiseMap != null)
 		{
-			var map = mapInfo.noiseMap.GetMap(new Vector2(position.x, -position.y));
+			var map = mapInfo.noiseMap.GetMap(new Vector2(position.x, -position.y), size);
 			
 			meshDatas = new MeshData[mapInfo.lodMax];
 			for (int i = 0; i < mapInfo.lodMax; i++)
@@ -26,7 +26,7 @@ public class ChunkData
 				meshDatas[i] = new MeshData(map, mapInfo.heightMultiplier, mapInfo.heightCurve, i);
 			}
 
-			size = new Vector2Int(mapInfo.noiseMap.width, mapInfo.noiseMap.height);
+			this.size = size;
 			colorMap = TextureGenerator.GenerateColorMap(map, mapInfo.biomeInfo);
 		}
 	}

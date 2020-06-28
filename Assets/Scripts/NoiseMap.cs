@@ -6,32 +6,28 @@ public class NoiseMap
 {
 	public int seed { get; set; }
 
-	public int width { get; set; }
-	public int height { get; set; }
 	public float scale { get; set; }
 
 	public int octaves { get; set; }
 	public float lacunarity { get; set; }
 	public float persistance { get; set; }
 
-	public Vector2 offset { get; set; }
-
 	Vector2[] octavesRandomOffset = null;
 
-	public float[,] GetMap(Vector2 position)
+	public float[,] GetMap(Vector2 position, Vector2Int size)
 	{
-		float[,] noiseMap = new float[width, height];
+		float[,] noiseMap = new float[size.x, size.y];
 
 		var minHeight = float.MaxValue;
 		var maxHeight = float.MinValue;
 
-		var halfWidth = width / 2.0f;
-		var halfHeight = height / 2.0f;
+		var halfWidth = size.x / 2.0f;
+		var halfHeight = size.y / 2.0f;
 
 		//Make height with a perlin noise
-		for (int i = 0; i < width; i++)
+		for (int i = 0; i < size.x; i++)
 		{
-			for (int j = 0; j < height; j++)
+			for (int j = 0; j < size.y; j++)
 			{
 				var frequency = 1.0f;
 				var amplitude = 1.0f;
@@ -39,8 +35,8 @@ public class NoiseMap
 
 				for (int k = 0; k < octaves; k++)
 				{
-					var x = (i + position.x - halfWidth) / scale * frequency + (octavesRandomOffset[k].x + offset.x);
-					var y = (j + position.y - halfHeight) / scale * frequency + (octavesRandomOffset[k].y + offset.y);
+					var x = (i + position.x + octavesRandomOffset[k].x - halfWidth) / scale * frequency;
+					var y = (j + position.y + octavesRandomOffset[k].y - halfHeight) / scale * frequency;
 
 					var perlinValue = Mathf.PerlinNoise(x, y) * 2 - 1;
 					noiseHeight += perlinValue * amplitude;
@@ -57,9 +53,9 @@ public class NoiseMap
 		}
 
 		//Make height between 0 and 1.
-		for (int i = 0; i < width; i++)
+		for (int i = 0; i < size.x; i++)
 		{
-			for (int j = 0; j < height; j++)
+			for (int j = 0; j < size.y; j++)
 			{
 				noiseMap[i, j] = Mathf.InverseLerp(minHeight, maxHeight, noiseMap[i, j]);
 			}
@@ -68,7 +64,7 @@ public class NoiseMap
 		return noiseMap;
 	}
 
-	public NoiseMap(int width, int height, int seed, float scale, int octaves, float lacunarity, float persistance, Vector2 offset)
+	public NoiseMap(int seed, float scale, int octaves, float lacunarity, float persistance, Vector2 offset)
 	{
 		Random.InitState(seed);
 
@@ -84,15 +80,12 @@ public class NoiseMap
 
 		this.seed = seed;
 
-		this.width = width;
-		this.height = height;
 		this.scale = scale;
 
 		this.octaves = octaves;
 		this.lacunarity = lacunarity;
 		this.persistance = persistance;
 
-		this.offset = offset;
 		this.octavesRandomOffset = octavesRandomOffset;
 	}
 }
