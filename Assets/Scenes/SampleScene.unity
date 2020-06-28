@@ -96,6 +96,7 @@ LightmapSettings:
     m_PVRFilteringAtrousPositionSigmaAO: 1
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
+    m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 112000000, guid: 793be3d3eb9108646b5388dc8992ffd3,
     type: 2}
   m_UseShadowmask: 1
@@ -137,7 +138,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &32694080
 Transform:
   m_ObjectHideFlags: 0
@@ -217,6 +218,7 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -289,8 +291,9 @@ Light:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 705507993}
   m_Enabled: 1
-  serializedVersion: 9
+  serializedVersion: 10
   m_Type: 1
+  m_Shape: 0
   m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
   m_Intensity: 1
   m_Range: 10
@@ -579,35 +582,35 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 0
       value: 0
-      inSlope: 0.010259037
-      outSlope: 0.010259037
+      inSlope: 0.017141517
+      outSlope: 0.017141517
       tangentMode: 34
       weightedMode: 0
       inWeight: 0
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.5022562
-      value: 0.005152665
-      inSlope: -0.008261979
-      outSlope: -0.008261979
+      time: 0.30059606
+      value: 0.0051526725
+      inSlope: 0.059909593
+      outSlope: 0.059909593
       tangentMode: 0
       weightedMode: 0
       inWeight: 0.33333334
-      outWeight: 0.105945274
+      outWeight: 0.080420606
     - serializedVersion: 3
-      time: 0.6965117
-      value: 0.0945507
-      inSlope: 0.64100915
-      outSlope: 0.64100915
+      time: 0.6996855
+      value: 0.30210075
+      inSlope: 1.4351705
+      outSlope: 1.4351705
       tangentMode: 0
       weightedMode: 0
       inWeight: 0.33333334
-      outWeight: 0.14584577
+      outWeight: 0.07611303
     - serializedVersion: 3
       time: 1
       value: 1
-      inSlope: 2.9834733
-      outSlope: 2.9834733
+      inSlope: 2.3238947
+      outSlope: 2.3238947
       tangentMode: 34
       weightedMode: 0
       inWeight: 0.33333334
@@ -643,7 +646,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1145101871}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c510624aa8762124b93494f10ac0c487, type: 3}
   m_Name: 

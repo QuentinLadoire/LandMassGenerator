@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -18,9 +18,6 @@ public class NoiseMap
 	{
 		float[,] noiseMap = new float[size.x, size.y];
 
-		var minHeight = float.MaxValue;
-		var maxHeight = float.MinValue;
-
 		var halfWidth = size.x / 2.0f;
 		var halfHeight = size.y / 2.0f;
 
@@ -38,15 +35,12 @@ public class NoiseMap
 					var x = (i + position.x + octavesRandomOffset[k].x - halfWidth) / scale * frequency;
 					var y = (j + position.y + octavesRandomOffset[k].y - halfHeight) / scale * frequency;
 
-					var perlinValue = Mathf.PerlinNoise(x, y) * 2 - 1;
+					var perlinValue = Mathf.PerlinNoise(x, y);
 					noiseHeight += perlinValue * amplitude;
 
 					frequency *= lacunarity;
 					amplitude *= persistance;
 				}
-
-				if (noiseHeight < minHeight) minHeight = noiseHeight;
-				else if (noiseHeight > maxHeight) maxHeight = noiseHeight;
 
 				noiseMap[i, j] = noiseHeight;
 			}
@@ -57,7 +51,7 @@ public class NoiseMap
 		{
 			for (int j = 0; j < size.y; j++)
 			{
-				noiseMap[i, j] = Mathf.InverseLerp(minHeight, maxHeight, noiseMap[i, j]);
+				noiseMap[i, j] = Mathf.InverseLerp(0.0f, 1.5f, noiseMap[i, j]);
 			}
 		}
 
